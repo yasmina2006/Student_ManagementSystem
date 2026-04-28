@@ -1,4 +1,5 @@
 Smart Student Management System (Java OOP)
+
 📌 Project Overview
 This is a desktop-based application designed to manage student records efficiently. It allows users to perform standard CRUD operations (Create, Read, Update, Delete) through a clean, interactive Graphical User Interface (GUI). The project demonstrates core Java concepts, object-oriented principles, and permanent data storage.
 🛠️ Key Features

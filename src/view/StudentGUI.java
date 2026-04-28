@@ -15,6 +15,7 @@ public class StudentGUI extends JFrame {
     private JTextField txtId, txtName, txtMarks;
     private JTextArea displayArea;
     private JButton btnAdd, btnView;
+    private JButton btnDelete, btnUpdate, btnSearch;
 
     public StudentGUI() {
         manager = new StudentManager();
@@ -27,7 +28,7 @@ public class StudentGUI extends JFrame {
         setLayout(new BorderLayout());
 
         // 2. Input Panel (The top part of the window)
-        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+        JPanel inputPanel = new JPanel(new GridLayout(7, 2));
         inputPanel.add(new JLabel("Student ID:"));
         txtId = new JTextField();
         inputPanel.add(txtId);
@@ -46,16 +47,26 @@ public class StudentGUI extends JFrame {
         btnView = new JButton("View All");
         inputPanel.add(btnView);
 
+        btnSearch = new JButton("Search by ID");
+        inputPanel.add(btnSearch);
+
+        btnUpdate = new JButton("Update Marks");
+        inputPanel.add(btnUpdate);
+
+        btnDelete = new JButton("Delete Student");
+        inputPanel.add(btnDelete);
+
+
         // 3. Display Area (The bottom part)
         displayArea = new JTextArea();
         displayArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(displayArea);
 
-        // Add panels to the main window
+
         add(inputPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
 
-        // 4. Button Logic (The "Brain" for the clicks)
+        // Adding student
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -77,7 +88,47 @@ public class StudentGUI extends JFrame {
                 }
             }
         });
-
+        btnSearch.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(txtId.getText());
+                Student s = manager.searchById(id);
+                if (s != null) {
+                    displayArea.setText("Found: " + s.toString());
+                    txtName.setText(s.getName());
+                    txtMarks.setText(String.valueOf(s.getMarks()));
+                }  else {
+                    JOptionPane.showMessageDialog(null, "Student not found!");
+                } } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Enter a valid ID.");
+                }
+        });
+        // for updating
+        btnUpdate.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(txtId.getText());
+                double marks = Double.parseDouble(txtMarks.getText());
+                manager.updateStudentMarks(id, marks);
+                manager.saveToFile();
+                JOptionPane.showMessageDialog(null, "Updated!");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid ID/Marks.");
+            }
+        });
+        // Listener for deleting
+        btnDelete.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(txtId.getText());
+                if (manager.deleteStudent(id)) {
+                    manager.saveToFile();
+                    JOptionPane.showMessageDialog(null, "Deleted!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Not Found.");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Enter valid ID.");
+            }
+        });
+        // View Listener
         btnView.addActionListener(e -> {
             displayArea.setText("");
             for (Student s : manager.getAllStudents()) {
